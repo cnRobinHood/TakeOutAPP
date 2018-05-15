@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mButton;
     private List<UserInfo> mUserInfos;
     private RecyclerViewAdapter mAdapter;
+    private long oldTime = 0;
     private LinearLayoutManager mLinearLayoutManager;
 
 
@@ -44,7 +46,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        userInfoInit();
+
+            userInfoInit();
+
         mRecyclerView = findViewById(R.id.recycler);
         mAdapter = new RecyclerViewAdapter(this, mUserInfos);
         mLinearLayoutManager = new LinearLayoutManager(this);
@@ -69,6 +73,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if (oldTime == 0) {
+            oldTime = System.currentTimeMillis();
+            Toast.makeText(this, "再次点击退出", Toast.LENGTH_SHORT).show();
+
+        } else if (System.currentTimeMillis() - oldTime < 2000) {
+           MainActivity.this.finish();
+        } else {
+            oldTime = 0;
+            Toast.makeText(this, "再次点击退出", Toast.LENGTH_SHORT).show();
+
+        }
 
     }
 

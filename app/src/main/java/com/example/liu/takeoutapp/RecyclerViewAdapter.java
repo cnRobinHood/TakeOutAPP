@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.util.List;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context mContext;
     private List<UserInfo> mUserInfos;
+    private static final String TAG = "RecyclerViewAdapter";
     private int size;
 
     public RecyclerViewAdapter(Context context, List<UserInfo> userInfos) {
@@ -35,16 +37,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, final int i) {
-        if (size==1&&!((ItemHolder) viewHolder).phone.isEnabled()){
+        if (size==1&&!((ItemHolder) viewHolder).phone.isEnabled()) {
             ((ItemHolder) viewHolder).phone.setEnabled(true);
             ((ItemHolder) viewHolder).phone.requestFocus();
             ((ItemHolder) viewHolder).locate.setEnabled(true);
             ((ItemHolder) viewHolder).foodNum.setEnabled(true);
             ((ItemHolder) viewHolder).linearLayout.setBackgroundColor(Color.WHITE);
+            Log.d(TAG, "onBindViewHolder: "+"haha");
         }
         ((ItemHolder) viewHolder).phone.setText(mUserInfos.get(i).getPhone());
         ((ItemHolder) viewHolder).locate.setText(mUserInfos.get(i).getLocate());
         ((ItemHolder) viewHolder).foodNum.setText(mUserInfos.get(i).getFoodNum());
+
         ((ItemHolder) viewHolder).save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,10 +56,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     mUserInfos.get(i).setPhone(((ItemHolder) viewHolder).phone.getText().toString());
                     mUserInfos.get(i).setLocate(((ItemHolder) viewHolder).locate.getText().toString());
                     mUserInfos.get(i).setFoodNum(((ItemHolder) viewHolder).foodNum.getText().toString());
+
                     ((ItemHolder) viewHolder).phone.setEnabled(false);
                     ((ItemHolder) viewHolder).locate.setEnabled(false);
                     ((ItemHolder) viewHolder).foodNum.setEnabled(false);
-                    ((MainActivity) mContext).addNewItem();
+                    if (mUserInfos.get(i).getStatus() == 0) {
+                        ((MainActivity) mContext).addNewItem();
+                        mUserInfos.get(i).setStatus(1);
+                    }
+
                 } else {
                     Toast.makeText(mContext, "兄die,信息不完整不能保存哦", Toast.LENGTH_SHORT).show();
                 }
@@ -68,13 +77,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 ((ItemHolder) viewHolder).phone.setEnabled(true);
                 ((ItemHolder) viewHolder).locate.setEnabled(true);
                 ((ItemHolder) viewHolder).foodNum.setEnabled(true);
+                Log.d(TAG, "onClick: "+i);
             }
         });
         ((ItemHolder) viewHolder).phoneCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!((ItemHolder) viewHolder).phone.isEnabled()) {
-                    call(((ItemHolder) viewHolder).phone.getText().toString(),viewHolder);
+                    call(((ItemHolder) viewHolder).phone.getText().toString(), viewHolder);
                 } else {
                     Toast.makeText(mContext, "别急，先保存", Toast.LENGTH_SHORT).show();
                 }
@@ -85,7 +95,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             @Override
             public void onClick(View view) {
                 if (!((ItemHolder) viewHolder).phone.isEnabled()) {
-                    sendMessage(((ItemHolder) viewHolder).phone.getText().toString(),viewHolder);
+                    sendMessage(((ItemHolder) viewHolder).phone.getText().toString(), viewHolder);
                 } else {
                     Toast.makeText(mContext, "别急，先保存", Toast.LENGTH_SHORT).show();
                 }
